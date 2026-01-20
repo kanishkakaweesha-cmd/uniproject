@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Online Delivery Management - Label <%= pkg ? pkg._id : '' %></title>
+    <style>
+      body { font-family: Arial, Helvetica, sans-serif; padding:20px }
+      .label { width:360px; border:1px solid #333; padding:12px; border-radius:6px }
+      .heading { font-weight:700; margin-bottom:8px }
+      .row { margin:6px 0 }
+      .small { font-size:0.85rem; color:#444 }
+      .print { margin-top:12px }
+      @media print { body { margin:0 } .print { display:none } }
+    </style>
+  </head>
+  <body>
+    <div class="label">
+      <div class="heading">Online Delivery Management - Label</div>
+      <div class="row"><strong>Delivery Company:</strong> <%= pkg.deliveryCompany %></div>
+      <div class="row"><strong>Item #:</strong> <%= pkg.itemNumber || '' %></div>
+      <div class="row"><strong>Barcode:</strong><br/><svg id="labelBarcode"></svg></div>
+      <div class="row"><strong>Package ID:</strong> <%= pkg._id %></div>
+      <div class="row"><strong>Customer:</strong> <%= pkg.customerName %></div>
+      <div class="row small"><strong>Address:</strong> <%= pkg.address %>, <%= pkg.postalCode %></div>
+      <div class="row"><strong>Phone:</strong> <%= pkg.phone %></div>
+      <% if (pkg.email) { %><div class="row small"><strong>Email:</strong> <%= pkg.email %></div><% } %>
+      <hr/>
+      <div class="row"><strong>Weight:</strong> <%= typeof pkg.weight === 'number' ? pkg.weight.toFixed(2) + ' g' : pkg.weight %></div>
+      <div class="row"><strong>Volume:</strong> <%= typeof pkg.volume === 'number' ? pkg.volume.toFixed(2) + ' cm³' : pkg.volume %></div>
+      <div class="row"><strong>Fee Type:</strong> <%= pkg.feeType %> &nbsp; <strong>Fee:</strong> Rs. <%= typeof pkg.fee === 'number' ? pkg.fee.toFixed(2) : pkg.fee %></div>
+      <div class="row small">User ID: <%= pkg.userId %></div>
+      <div class="print">
+        <button onclick="window.print()">Print</button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script>
+      try {
+        var bc = '<%= pkg.barcode || pkg._id %>';
+        JsBarcode('#labelBarcode', bc, {format: 'CODE128', displayValue: true, width:1, height:35});
+      } catch (e) { console.error('barcode render', e); }
+    </script>
+  </body>
+</html>

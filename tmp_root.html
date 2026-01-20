@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Delivery Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial; margin: 1.5rem; color:#222 }
+      header { margin-bottom: 1rem }
+      .kpis { display:flex; gap:1rem; margin-bottom:1rem }
+      .kpi { background:#fff;padding:1rem;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1 }
+      table { width:100%; border-collapse:collapse; background:#fff; border-radius:6px; overflow:hidden }
+      th,td { padding:10px; border-bottom:1px solid #eee; text-align:left }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Delivery Dashboard</h1>
+    </header>
+
+    <section class="kpis">
+      <div class="kpi">
+        <div style="font-size:0.8rem;color:#666">Total Packages</div>
+        <div style="font-size:1.6rem;font-weight:700">0</div>
+      </div>
+      <div class="kpi">
+        <div style="font-size:0.8rem;color:#666">Total Revenue</div>
+        <div style="font-size:1.6rem;font-weight:700">Rs. 0.00</div>
+      </div>
+      <div class="kpi">
+        <div style="font-size:0.8rem;color:#666">Avg Weight</div>
+        <div style="font-size:1.6rem;font-weight:700">0.00 g</div>
+      </div>
+    </section>
+
+    <section style="margin-bottom:1rem">
+      <h2>Live Feed (most recent)</h2>
+      <table>
+        <thead>
+          <tr><th>Timestamp</th><th>Weight</th><th>Volume</th><th>Fee Type</th><th>Fee</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr><td colspan="5">No packages</td></tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Packages by Fee Type</h2>
+      <canvas id="feeChart" width="400" height="200"></canvas>
+    </section>
+
+    <script>
+      // chart data injected from server
+      var chartData = {"error":"Operation `packages.aggregate()` buffering timed out after 10000ms"};
+      (function(){
+        try {
+          var labels = chartData.map(function(it){ return it._id });
+          var counts = chartData.map(function(it){ return it.count });
+          var ctx = document.getElementById('feeChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{ data: counts, backgroundColor: ['#1abc9c','#3498db','#e67e22','#9b59b6','#e74c3c'] }]
+            }
+          });
+        } catch (e) {
+          console.error('chart render error', e);
+        }
+      })();
+    </script>
+  </body>
+</html>

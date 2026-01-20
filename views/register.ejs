@@ -1,0 +1,297 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Register - Online Delivery Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root{--accent:#27ae60;--muted:#666}
+      body{
+        font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+        padding:0;
+        margin:0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        transition: background 0.3s ease;
+      }
+      body.dark-theme {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      }
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+      }
+      body.dark-theme .theme-toggle {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(148, 163, 184, 0.3);
+        color: #e2e8f0;
+      }
+      .container{width:100%;max-width:520px;padding:24px;margin:0 auto;}
+      .card{
+        background: rgba(255, 255, 255, 0.95);
+        border-radius:12px;
+        box-shadow:0 6px 24px rgba(8,20,40,0.08);
+        padding:32px;
+        transition: background 0.3s ease;
+      }
+      body.dark-theme .card {
+        background: rgba(30, 41, 59, 0.95);
+      }
+      .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+      .logo {display:flex;align-items:center;gap:12px;justify-content:center;flex:1;}
+      .logo img{height:50px}
+      .logo > div > div:first-child {
+        font-weight:700;
+        color: #2d3748;
+        transition: color 0.3s ease;
+      }
+      body.dark-theme .logo > div > div:first-child {
+        color: #e2e8f0;
+      }
+      .logo > div > div:last-child {
+        font-size:12px;
+        color:var(--muted);
+        transition: color 0.3s ease;
+      }
+      body.dark-theme .logo > div > div:last-child {
+        color: #94a3b8;
+      }
+      .login-link button{
+        background:transparent;
+        border:1px solid #ddd;
+        padding:8px 12px;
+        border-radius:8px;
+        cursor:pointer;
+        transition: all 0.2s;
+      }
+      body.dark-theme .login-link button {
+        border-color: #475569;
+        color: #e2e8f0;
+      }
+      h1{
+        margin:16px 0 24px;
+        font-size:24px;
+        color: #2d3748;
+        transition: color 0.3s ease;
+        text-align: center;
+      }
+      body.dark-theme h1 {
+        color: #e2e8f0;
+      }
+      form{display:flex;flex-direction:column;gap:16px}
+      label{
+        display:block;
+        font-size:14px;
+        color:var(--muted);
+        transition: color 0.3s ease;
+      }
+      body.dark-theme label {
+        color: #94a3b8;
+      }
+      label span {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      input,select{
+        padding:12px;
+        border-radius:8px;
+        border:1px solid #e6e9ee;
+        background:#fff;
+        color: #2d3748;
+        outline:none;
+        transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        width: 100%;
+        font-size: 14px;
+      }
+      body.dark-theme input,
+      body.dark-theme select {
+        background: #1e293b;
+        border-color: #475569;
+        color: #e2e8f0;
+      }
+      input:focus, select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+      body.dark-theme input:focus,
+      body.dark-theme select:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+      }
+      .row{display:flex;gap:10px;flex-wrap:wrap}
+      .row > label{flex:1;min-width:160px}
+      .actions{display:flex;gap:12px;align-items:center;flex-direction:column;align-items:stretch;}
+      .btn-primary{
+        background:var(--accent);
+        color:#fff;
+        padding:12px 20px;
+        border-radius:8px;
+        border:none;
+        cursor:pointer;
+        transition: all 0.2s;
+        font-size: 16px;
+        font-weight: 600;
+        width: 100%;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+      }
+      .msg{
+        margin-left:0;
+        color:#333;
+        transition: color 0.3s ease;
+        text-align: center;
+        margin-top: 10px;
+      }
+      body.dark-theme .msg {
+        color: #e2e8f0;
+      }
+      @media (max-width:640px){.container{padding:16px}.card{padding:20px}}
+    </style>
+  </head>
+  <body>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span id="theme-icon">🌙</span>
+      <span id="theme-text">Dark</span>
+    </button>
+    <div class="container">
+      <div class="card">
+        <div class="brand">
+          <div class="logo" style="text-align:center;width:100%;">
+            <img src="/logo.svg" alt="Logo">
+          </div>
+        </div>
+
+        <h1>Register Your Delivery Company</h1>
+
+        <form id="registerForm">
+          <label>
+            <span>Company Name</span>
+            <input name="companyName" required placeholder="e.g. FastDeliveries Ltd.">
+          </label>
+
+          <label>
+            <span>Email Address</span>
+            <input name="email" type="email" required placeholder="company@example.com">
+          </label>
+
+          <label>
+            <span>Phone Number</span>
+            <input name="phone" required placeholder="07x-xxxxxxx">
+          </label>
+
+          <label>
+            <span>Address</span>
+            <input name="address" required placeholder="Street, City, Country">
+          </label>
+
+          <label>
+            <span>Postal Code</span>
+            <input name="postalCode" required placeholder="Postal code">
+          </label>
+
+          <label>
+            <span>Machine Code (Optional)</span>
+            <input 
+              name="machineCode" 
+              placeholder="ED00001-ED99999 (Auto-generated if left blank)" 
+              pattern="ED[0-9]{5}"
+              maxlength="7"
+              style="text-transform: uppercase;"
+              title="Must be in format ED00001 to ED99999">
+          </label>
+
+          <label>
+            <span>Password</span>
+            <input name="password" type="password" required minlength="6" placeholder="Choose a secure password (min 6 characters)">
+          </label>
+
+          <div class="actions">
+            <button class="btn-primary" type="submit">Register</button>
+            <div id="msg" class="msg"></div>
+            <div style="text-align:center;margin-top:10px;">
+              <span style="color:#666;">Already have an account? </span>
+              <a href="/auth/login" style="color:#27ae60;text-decoration:none;font-weight:600;">Login here</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Theme toggle functionality
+      function toggleTheme() {
+        const body = document.body;
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+        
+        body.classList.toggle('dark-theme');
+        
+        if (body.classList.contains('dark-theme')) {
+          themeIcon.textContent = '☀️';
+          themeText.textContent = 'Light';
+          localStorage.setItem('theme', 'dark');
+        } else {
+          themeIcon.textContent = '🌙';
+          themeText.textContent = 'Dark';
+          localStorage.setItem('theme', 'light');
+        }
+      }
+
+      // Load saved theme preference
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+        
+        if (savedTheme === 'dark') {
+          document.body.classList.add('dark-theme');
+          if (themeIcon) themeIcon.textContent = '☀️';
+          if (themeText) themeText.textContent = 'Light';
+        }
+      })();
+
+      // Register form handler
+      document.getElementById('registerForm').addEventListener('submit', async function(e){
+        e.preventDefault();
+        var form = e.target;
+        var data = Object.fromEntries(new FormData(form));
+        var msg = document.getElementById('msg'); msg.textContent='';
+        
+        try{
+          var res = await fetch('/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+          var body = await res.json().catch(()=>({}));
+          if(!res.ok) throw body;
+          msg.style.color='green'; msg.textContent='Registered successfully. Redirecting to login...';
+          setTimeout(()=>location.href='/auth/login',900);
+        }catch(err){ msg.style.color='crimson'; msg.textContent = (err && err.errors) ? err.errors.join('; ') : (err.error || JSON.stringify(err)); }
+      });
+    </script>
+  </body>
+</html>
