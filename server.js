@@ -12,7 +12,8 @@ const authRoutes = require('./routes/auth');
 const { startSerialIngest, stopSerialIngest } = require('./services/serialIngest');
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = mongodb+srv://kanishkakaweesha4_db_user:Hn5FtvpJyaHC0Yra@cluster0.fxqnzql.mongodb.net/delivery_db?retryWrites=true&w=majority
+;
 
 const app = express();
 
