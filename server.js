@@ -20,18 +20,33 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
+
 // Views (EJS)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Connect to MongoDB (no deprecated options)
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// Connect to MongoDB 
+
+const mongoose = require('mongoose');
+
+const mongoURI = process.env.MONGO_URI;
+
+if (!mongoURI) {
+  console.error('Error: MONGO_URI environment variable not set!');
+  process.exit(1);
+}
+
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB connected successfully'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 mongoose.connection.on('error', err => {
   console.error('Mongoose connection error:', err);
 });
+
 
 // Mount API routes under /api
 app.use('/api', apiRoutes);
