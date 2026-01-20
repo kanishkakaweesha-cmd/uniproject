@@ -11,8 +11,8 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth');
 const { startSerialIngest, stopSerialIngest } = require('./services/serialIngest');
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/delivery_db';
 const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
 
 const app = express();
 
