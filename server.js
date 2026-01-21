@@ -12,7 +12,15 @@ const authRoutes = require('./routes/auth');
 const { startSerialIngest, stopSerialIngest } = require('./services/serialIngest');
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/delivery_db';
+
+// Log environment info (without exposing sensitive data)
+console.log('Environment:', {
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  PORT: PORT,
+  MONGO_URI_SET: !!process.env.MONGO_URI,
+  JWT_SECRET_SET: !!process.env.JWT_SECRET
+});
 
 const app = express();
 
@@ -64,28 +72,55 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
-// Main Dashboard Route — renders `views/index.ejs` by fetching API data
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  };
+  res.status(200).json(health);
+});
+
+// Main Dashboard Route — renders `views/index.ejs` by fetching data directly from database
 app.get('/dashboard', async (req, res) => {
   try {
-    const summaryUrl = `http://localhost:${PORT}/api/dashboard/summary`;
-    const recentUrl = `http://localhost:${PORT}/api/packages/recent`;
-    const chartUrl = `http://localhost:${PORT}/api/dashboard/chart`;
-
-    const [summaryRes, recentRes, chartRes] = await Promise.all([
-      fetch(summaryUrl),
-      fetch(recentUrl),
-      fetch(chartUrl)
+    // Fetch data directly from database instead of making HTTP requests
+    const [packages, totalRevenue, avgWeight] = await Promise.all([
+      Package.find().sort({ createdAt: -1 }).limit(10).exec(),
+      Package.aggregate([{ $group: { _id: null, total: { $sum: '$fee' } } }]).exec(),
+      Package.aggregate([{ $group: { _id: null, avg: { $avg: '$weight' } } }]).exec()
     ]);
 
-    const summaryData = await summaryRes.json();
-    const recentData = await recentRes.json();
-    const chartData = await chartRes.json();
+    const totalPackages = await Package.countDocuments().exec();
+    const revenue = totalRevenue.length > 0 ? totalRevenue[0].total : 0;
+    const avgWt = avgWeight.length > 0 ? avgWeight[0].avg : 0;
+
+    // Get chart data (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const chartData = await Package.aggregate([
+      { $match: { createdAt: { $gte: sevenDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]).exec();
 
     // summary route returns a single object (not an array)
     res.render('index', {
-      summary: summaryData,
-      recentPackages: recentData,
-      chart: chartData
+      summary: {
+        totalPackages: totalPackages,
+        totalRevenue: revenue,
+        avgWeight: avgWt
+      },
+      recentPackages: packages,
+      chart: chartData.map(d => ({ date: d._id, count: d.count }))
     });
 
   } catch (error) {
